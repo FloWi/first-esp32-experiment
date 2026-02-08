@@ -40,6 +40,11 @@ fn main() -> ! {
     let mut led = SmartLedsAdapter::new(rmt.channel0, peripherals.GPIO8, &mut led_buffer);
 
     const LEVEL: u8 = 10;
+    const DIM_FACTOR: f32 = LEVEL as f32 / u8::max_value() as f32;
+
+    fn protect_retina(value: u8) -> u8 {
+        (value as f32 * DIM_FACTOR) as u8
+    }
 
     // start with all leds off
     let mut color = RGB8::default();
@@ -64,9 +69,9 @@ fn main() -> ! {
 
         // set all primary colors at one - YES, rust can assign multiple props of a struct like this
         (color.r, color.b, color.g) = (
-            (rng_buffer[0] as f32 * (LEVEL as f32 / u8::max_value() as f32)) as u8,
-            (rng_buffer[1] as f32 * (LEVEL as f32 / u8::max_value() as f32)) as u8,
-            (rng_buffer[2] as f32 * (LEVEL as f32 / u8::max_value() as f32)) as u8,
+            protect_retina(rng_buffer[0]),
+            protect_retina(rng_buffer[1]),
+            protect_retina(rng_buffer[2]),
         )
     }
 }
