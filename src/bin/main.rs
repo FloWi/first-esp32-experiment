@@ -45,17 +45,19 @@ fn main() -> ! {
     let mut color = RGB8::default();
 
     let rng = Rng::new();
+
+    // one array with 3 u8 values act as buffer for generating 3 u8 values at once
     let mut rng_buffer = [0u8; 16];
     loop {
         // generate 3 u8 values at once
         rng.read(&mut rng_buffer);
 
-        led.write([color].into_iter()).unwrap();
-
         info!(
             "Blink in color #{:02X}{:02X}{:02X}",
             color.r, color.g, color.b
         );
+
+        led.write([color].into_iter()).unwrap();
 
         let delay_start = Instant::now();
         while delay_start.elapsed() < Duration::from_millis(500) {}
